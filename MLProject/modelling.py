@@ -1,4 +1,3 @@
-```python id="pkydx9"
 import os
 import json
 import argparse
@@ -393,4 +392,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
