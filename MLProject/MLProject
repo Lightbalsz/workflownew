@@ -1,11 +1,9 @@
-name: churn-mlflow-project
-
-conda_env: conda.yaml
+name: customer-churn-mlflow
 
 entry_points:
   main:
     parameters:
-      data: {type: path}
+      data: {type: string}
       target: {type: string}
-      out_dir: {type: path}
+      out_dir: {type: string}
     command: "python modelling.py --data {data} --target {target} --out_dir {out_dir}"

@@ -32,7 +32,7 @@ jobs:
         shell: bash -l {0}
         run: |
           python -m pip install --upgrade pip
-          pip install mlflow scikit-learn pandas numpy joblib matplotlib
+          pip install mlflow scikit-learn pandas numpy joblib matplotlib dagshub
 
       # Tracking lokal supaya mlruns tersimpan di repo dan bisa dicari run_id-nya
       - name: Configure MLflow local tracking
@@ -44,12 +44,11 @@ jobs:
         shell: bash -l {0}
         run: |
           mkdir -p artifacts/latest
-          cd MLProject
-          mlflow run . \
-            -P data=loan-dataset_preprocessing/loan_preprocessed.csv \
-            -P target=Loan_Status \
+          mlflow run ./MLProject \
+            -P data=customer_churn_preprocessing.csv \
+            -P target=Churn \
             -P out_dir=../artifacts/latest \
-            --experiment-name "${EXPERIMENT_NAME}"
+            --env-manager=local
 
       # Ambil run_id terakhir dari experiment (yang barusan jalan)
       - name: Get latest MLflow run_id
