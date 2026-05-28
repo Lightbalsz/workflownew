@@ -1,0 +1,3 @@
+[('num', Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),
+                ('scaler', StandardScaler())]), ['Tenure', 'Usage Frequency', 'Support Calls', 'Payment Delay', 'Total Spend', 'Last Interaction']), ('cat', Pipeline(steps=[('imputer', SimpleImputer(strategy='most_frequent')),
+                ('ohe', OneHotEncoder(handle_unknown='ignore'))]), ['Gender_Male', 'Subscription Type_Premium', 'Subscription Type_Standard', 'Contract Length_Monthly', 'Contract Length_Quarterly', 'Age_Group_25-34', 'Age_Group_35-44', 'Age_Group_45-54', 'Age_Group_55-65'])]
