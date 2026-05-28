@@ -38,8 +38,7 @@ def get_run_context(run_name: str):
     - mlflow run .
     - python modelling.py
 
-    If MLflow Project already created active run,
-    do NOT create another run.
+    Avoid nested MLflow run conflicts.
     """
 
     active_run = mlflow.active_run()
@@ -99,6 +98,7 @@ def infer_problem_type(y: pd.Series):
 
 
 def main():
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -146,7 +146,7 @@ def main():
         mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
     # =========================================================
-    # Output dir
+    # Output directory
     # =========================================================
 
     data_path = Path(args.data)
@@ -168,12 +168,24 @@ def main():
 
     df = df.dropna(subset=[args.target]).copy()
 
+    # =========================================================
+    # Convert bool columns to string
+    # Avoid sklearn SimpleImputer bool issue
+    # =========================================================
+
+    bool_columns = df.select_dtypes(
+        include=["bool"]
+    ).columns
+
+    for col in bool_columns:
+        df[col] = df[col].astype(str)
+
     X = df.drop(columns=[args.target])
 
     y = df[args.target]
 
     # =========================================================
-    # Split dataset
+    # Train test split
     # =========================================================
 
     problem_type = infer_problem_type(y)
@@ -189,42 +201,78 @@ def main():
     )
 
     # =========================================================
-    # Feature engineering
+    # Feature type detection
     # =========================================================
 
     cat_cols = X_train.select_dtypes(
-        include=["object", "category", "bool"]
+        include=["object", "category"]
     ).columns.tolist()
 
-    num_cols = [
-        c for c in X_train.columns
-        if c not in cat_cols
-    ]
+    num_cols = X_train.select_dtypes(
+        include=[
+            "int64",
+            "float64",
+            "int32",
+            "float32"
+        ]
+    ).columns.tolist()
+
+    print("Categorical columns:", cat_cols)
+    print("Numeric columns:", num_cols)
+
+    # =========================================================
+    # Preprocessing pipelines
+    # =========================================================
 
     numeric_transformer = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler()),
+            (
+                "imputer",
+                SimpleImputer(strategy="median")
+            ),
+            (
+                "scaler",
+                StandardScaler()
+            ),
         ]
     )
 
     categorical_transformer = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="most_frequent")),
+            (
+                "imputer",
+                SimpleImputer(
+                    strategy="most_frequent"
+                ),
+            ),
             (
                 "ohe",
-                OneHotEncoder(handle_unknown="ignore")
+                OneHotEncoder(
+                    handle_unknown="ignore"
+                ),
             ),
         ]
     )
 
     preprocessor = ColumnTransformer(
         transformers=[
-            ("num", numeric_transformer, num_cols),
-            ("cat", categorical_transformer, cat_cols),
+            (
+                "num",
+                numeric_transformer,
+                num_cols
+            ),
+            (
+                "cat",
+                categorical_transformer,
+                cat_cols
+            ),
         ],
         remainder="drop",
     )
+
+    # =========================================================
+    # Model
+    # =========================================================
 
     clf = LogisticRegression(
         max_iter=2000,
@@ -291,16 +339,20 @@ def main():
         roc_auc = None
 
         try:
+
             if hasattr(model, "predict_proba"):
 
                 proba = model.predict_proba(X_test)
 
                 if problem_type == "binary":
+
                     roc_auc = roc_auc_score(
                         y_test,
                         proba[:, 1]
                     )
+
                 else:
+
                     roc_auc = roc_auc_score(
                         y_test,
                         proba,
@@ -308,6 +360,7 @@ def main():
                     )
 
         except Exception as e:
+
             print(f"ROC AUC skipped: {e}")
 
         # =====================================================
@@ -377,7 +430,7 @@ def main():
         )
 
         # =====================================================
-        # Explicit artifact logging
+        # Explicit MLflow artifact logging
         # =====================================================
 
         mlflow.log_artifact(str(model_path))
