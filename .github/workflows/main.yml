@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      EXPERIMENT_NAME: loan-mlflow-project
-      IMAGE_REPO: loan-mlflow-model
+      EXPERIMENT_NAME: customer-churn-project
+      IMAGE_REPO: customer-churn-project
       IMAGE_TAG: latest
 
     steps:
@@ -45,6 +45,7 @@ jobs:
         run: |
           mkdir -p artifacts/latest
           mlflow run ./MLProject \
+            --experiment-name customer-churn-project \
             -P data=customer_churn_preprocessing.csv \
             -P target=Churn \
             -P out_dir=../artifacts/latest \
