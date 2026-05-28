@@ -1,0 +1,14 @@
+artifact_uri: file:///home/runner/work/workflownew/workflownew/mlruns/714235532976604659/6f20f708fa1549408494b430439742d3/artifacts
+end_time: 1779978053109
+entry_point_name: ''
+experiment_id: '714235532976604659'
+lifecycle_stage: active
+run_id: 6f20f708fa1549408494b430439742d3
+run_name: logreg-autolog-ci
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779978044694
+status: 3
+tags: []
+user_id: runner

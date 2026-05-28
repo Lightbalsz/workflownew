@@ -1,0 +1,18 @@
+digest: e5aff087
+name: dataset
+profile: '{"num_rows": 12875, "num_elements": 193125}'
+schema: '{"mlflow_colspec": [{"type": "double", "name": "Tenure", "required": true},
+  {"type": "double", "name": "Usage Frequency", "required": true}, {"type": "double",
+  "name": "Support Calls", "required": true}, {"type": "double", "name": "Payment
+  Delay", "required": true}, {"type": "double", "name": "Total Spend", "required":
+  true}, {"type": "double", "name": "Last Interaction", "required": true}, {"type":
+  "string", "name": "Gender_Male", "required": true}, {"type": "string", "name": "Subscription
+  Type_Premium", "required": true}, {"type": "string", "name": "Subscription Type_Standard",
+  "required": true}, {"type": "string", "name": "Contract Length_Monthly", "required":
+  true}, {"type": "string", "name": "Contract Length_Quarterly", "required": true},
+  {"type": "string", "name": "Age_Group_25-34", "required": true}, {"type": "string",
+  "name": "Age_Group_35-44", "required": true}, {"type": "string", "name": "Age_Group_45-54",
+  "required": true}, {"type": "string", "name": "Age_Group_55-65", "required": true}]}'
+source: '{"tags": {"mlflow.user": "runner", "mlflow.source.name": "modelling.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "e7621fcf0fa9e2dfa69a358f674248305bf3fc62"}}'
+source_type: code
