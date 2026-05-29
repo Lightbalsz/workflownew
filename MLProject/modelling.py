@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+import shutil
 from pathlib import Path
 from contextlib import nullcontext
 
@@ -9,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 import mlflow
+import mlflow.sklearn
 
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
@@ -367,10 +369,18 @@ def main():
         # Save local artifacts
         # =====================================================
 
+        # 1. Simpan format bawaan Anda (Joblib)
         model_path = out_dir / "model.joblib"
-
         joblib.dump(model, model_path)
 
+        # 2. TAMBAHAN BARU: Simpan model format MLflow ke direktori lokal
+        # Ini akan membuat folder artifacts/latest/model
+        mlflow_model_dir = out_dir / "model"
+        if mlflow_model_dir.exists():
+            shutil.rmtree(mlflow_model_dir) # Hapus folder lama agar tidak error
+        mlflow.sklearn.save_model(model, str(mlflow_model_dir))
+
+        # 3. Simpan metrik & log
         metrics = {
             "accuracy": float(acc),
             "f1": float(f1),

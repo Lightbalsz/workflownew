@@ -90,14 +90,9 @@ jobs:
       - name: Build Custom Docker image
         shell: bash -l {0}
         run: |
-          echo "Using RUN_ID=${RUN_ID}"
-          docker --version
-
           export LOCAL_IMAGE="loan-mlflow-model:latest"
-
-          # Melakukan build menggunakan Dockerfile baru di root
-          docker build --build-arg RUN_ID=${RUN_ID} -t "${LOCAL_IMAGE}" .
-
+          # Build tanpa build-arg RUN_ID
+          docker build -t "${LOCAL_IMAGE}" .
           echo "LOCAL_IMAGE=${LOCAL_IMAGE}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub

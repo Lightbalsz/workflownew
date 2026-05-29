@@ -6,21 +6,18 @@ import os
 
 app = FastAPI(title="Customer Churn Prediction API")
 
-# Setup Prometheus Instrumentator untuk mengekspos endpoint /metrics
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
-# Setup konfigurasi lokasi tracking MLflow lokal di dalam container
-os.environ["MLFLOW_TRACKING_URI"] = "file:///app/mlruns"
-run_id = os.environ.get("RUN_ID")
+# Path langsung ke folder model yang sudah disalin ke dalam container
+MODEL_PATH = "/app/artifacts/latest/model"
 
-# Load Model MLflow berdasarkan RUN_ID dari GitHub Actions
-if run_id:
-    model_uri = f"runs:/{run_id}/model"
-    print(f"Loading model from: {model_uri}")
-    model = mlflow.pyfunc.load_model(model_uri)
+print(f"Mencoba memuat model dari: {MODEL_PATH}")
+if os.path.exists(MODEL_PATH):
+    model = mlflow.pyfunc.load_model(MODEL_PATH)
+    print("Model berhasil dimuat!")
 else:
     model = None
-    print("Warning: RUN_ID tidak ditemukan.")
+    print(f"Error: Folder model tidak ditemukan di {MODEL_PATH}")
 
 @app.get("/")
 def ping():
