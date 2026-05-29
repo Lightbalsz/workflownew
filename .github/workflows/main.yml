@@ -87,18 +87,16 @@ jobs:
           PY
 
       # Build docker image dari MLflow model artifact (runs:/RUN_ID/model)
-      - name: Build Docker image locally with MLflow (safe name)
+      - name: Build Custom Docker image
         shell: bash -l {0}
         run: |
           echo "Using RUN_ID=${RUN_ID}"
           docker --version
 
-          # SAFE LOCAL NAME (no username, always valid)
           export LOCAL_IMAGE="loan-mlflow-model:latest"
 
-          mlflow models build-docker \
-            -m "runs:/${RUN_ID}/model" \
-            -n "${LOCAL_IMAGE}"
+          # Melakukan build menggunakan Dockerfile baru di root
+          docker build --build-arg RUN_ID=${RUN_ID} -t "${LOCAL_IMAGE}" .
 
           echo "LOCAL_IMAGE=${LOCAL_IMAGE}" >> $GITHUB_ENV
 
